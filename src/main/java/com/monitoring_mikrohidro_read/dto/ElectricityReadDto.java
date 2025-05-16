@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ElectricityReadDto {
         private long id;
+        private long machineId;
         private float temperature;
         private float humidity;
         private float intensity;
@@ -24,5 +25,4 @@ public class ElectricityReadDto {
         private float turbineCitizensVolt;
         private float turbineCitizensCurrent;
         private LocalDateTime timestamp;
-
 }

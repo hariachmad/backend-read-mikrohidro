@@ -25,8 +25,9 @@ public class LastIdRepository {
         return jdbcTemplate.queryForObject(sql, lastIdRowMapper);
     }
 
-    public void updateLastId(long lastId,long newLastId) {
+    public long updateLastId(long lastId,long newLastId) {
         String sql = "UPDATE last_id SET last_id = ? where last_id = ?";
         jdbcTemplate.update(sql, newLastId,lastId);
+        return newLastId;
     }
 }
