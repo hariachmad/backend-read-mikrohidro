@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "event.version",
-  "type": "java.lang.String",
-  "description": "A description for 'event.version'"
-}]}
+{"properties": [
+  {
+    "name": "event.version",
+    "type": "java.lang.String",
+    "description": "A description for 'event.version'"
+  },
+  {
+    "name": "electricity.event.topiccName",
+    "type": "java.lang.String",
+    "description": "A description for 'electricity.event.topiccName'"
+  }
+]}

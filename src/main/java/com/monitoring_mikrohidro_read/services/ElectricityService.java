@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
 import com.monitoring_mikrohidro_read.enitities.events.ElectricityEventV1;
 import com.monitoring_mikrohidro_read.exceptions.DatabaseUpdateException;
+import com.monitoring_mikrohidro_read.publisher.ElectricityEventKafkaPublisher;
 import com.monitoring_mikrohidro_read.repositories.ElectricityRepository;
 import com.monitoring_mikrohidro_read.repositories.LastIdRepository;
 
@@ -21,6 +22,9 @@ public class ElectricityService {
 
     @Autowired
     ElectricityRepository electricityRepository;
+
+    @Autowired
+    ElectricityEventKafkaPublisher electricityEventKafkaPublisher;
 
     @Value("${event.version}")
     String eventVersion;
@@ -42,7 +46,7 @@ public class ElectricityService {
         electricityEvent.setEventVersion(eventVersion);
         electricityEvent.setEventTimestamp(event.getTimestamp());
 
-        //publish event!
+        electricityEventKafkaPublisher.sendEvent(electricityEvent);
 
         return electricityEvent;
     };
