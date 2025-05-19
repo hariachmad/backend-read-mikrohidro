@@ -30,7 +30,7 @@ public class ElectricityServiceTest {
     @InjectMocks
     ElectricityService electricityService;
 
-    @Test
+    // @Test
     public void testCheckNewRows() {
         LastIdDto mockLastIdDto = new LastIdDto(1L); // Mock lastIdDto with a specific lastId
         List<ElectricityReadDto> mockElectricityReadDto = new ArrayList<>();

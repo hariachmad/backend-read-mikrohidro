@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SolarPanel {
     private long id;
-    private float volatage;
+    private float voltage;
     private float current;
     private LocalDateTime timestamp;
 }

@@ -4,16 +4,26 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.KafkaBackoffException;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
+import com.monitoring_mikrohidro_read.enitities.Battery;
+import com.monitoring_mikrohidro_read.enitities.HumiditySensor;
+import com.monitoring_mikrohidro_read.enitities.IntensitySensor;
+import com.monitoring_mikrohidro_read.enitities.SolarPanel;
+import com.monitoring_mikrohidro_read.enitities.TempSensor;
+import com.monitoring_mikrohidro_read.enitities.TurbineCitizens;
+import com.monitoring_mikrohidro_read.enitities.TurbineOutput;
 import com.monitoring_mikrohidro_read.enitities.events.ElectricityEventV1;
 import com.monitoring_mikrohidro_read.exceptions.DatabaseUpdateException;
-import com.monitoring_mikrohidro_read.publisher.ElectricityEventKafkaPublisher;
 import com.monitoring_mikrohidro_read.repositories.ElectricityRepository;
 import com.monitoring_mikrohidro_read.repositories.LastIdRepository;
-
 
 @Service
 public class ElectricityService {
@@ -24,11 +34,7 @@ public class ElectricityService {
     ElectricityRepository electricityRepository;
 
     @Autowired
-    ElectricityEventKafkaPublisher electricityEventKafkaPublisher;
-
-    @Value("${event.version}")
-    String eventVersion;
-
+    private KafkaTemplate<String, ElectricityEventV1> kafkaTemplate;
 
     public void updateLastId(long lastId, long newLastId) {
         try {
@@ -40,13 +46,26 @@ public class ElectricityService {
 
     public ElectricityEventV1 publishEvent(ElectricityReadDto event) {
 
-       ElectricityEventV1 electricityEvent = new ElectricityEventV1();
-        electricityEvent.setMachineId(event.getMachineId());
+        ElectricityEventV1 electricityEvent = new ElectricityEventV1();
+        electricityEvent.setMachineId(1);
         electricityEvent.setEventId(event.getId());
-        electricityEvent.setEventVersion(eventVersion);
+        electricityEvent.setEventVersion("1");
         electricityEvent.setEventTimestamp(event.getTimestamp());
+        electricityEvent.setBattery(new Battery(event.getId(),event.getBatteryVoltage(), event.getBatteryCurrentOne(), event.getBatteryCurrentTwo(), event.getTimestamp()));
+        electricityEvent.setHumiditySensor(new HumiditySensor(event.getId(), event.getHumidity(), event.getTimestamp()));
+        electricityEvent.setIntensitySensor(new IntensitySensor(event.getId(), event.getIntensity(), event.getTimestamp()));
+        electricityEvent.setSolarPanel(new SolarPanel(event.getId(), event.getSolarPanelVoltage(), event.getSolarPanelCurrent(), event.getTimestamp()));
+        electricityEvent.setTempSensor(new TempSensor(event.getId(), event.getTemperature(), event.getTimestamp()));
+        electricityEvent.setTurbineCitizens(new TurbineCitizens(event.getId(), event.getTurbineCitizensVolt(), event.getTurbineCitizensCurrent(), event.getTimestamp()));
+        electricityEvent.setTurbineOutput(new TurbineOutput(event.getId(), event.getTurbineOutputVolt(), event.getTurbineOutputCurrent(), event.getTimestamp()));
+        System.out.println("Publishing event: " + electricityEvent.toString());
 
-        electricityEventKafkaPublisher.sendEvent(electricityEvent);
+        Message<ElectricityEventV1> message = MessageBuilder
+                .withPayload(electricityEvent)
+                .setHeader(KafkaHeaders.TOPIC, "electricity-event")
+                .build();
+
+        kafkaTemplate.send(message);
 
         return electricityEvent;
     };
@@ -57,7 +76,6 @@ public class ElectricityService {
         }
         return true;
     }
-
 
     @Scheduled(fixedRate = 5000)
     public Long checkNewRows() {

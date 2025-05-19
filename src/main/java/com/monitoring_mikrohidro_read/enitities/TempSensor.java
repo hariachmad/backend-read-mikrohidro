@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class TempSensor {
     private long id;
     private float temperature;
-    private float humidity;
     private LocalDateTime timestamp;
 }
