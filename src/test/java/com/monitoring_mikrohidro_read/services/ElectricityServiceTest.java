@@ -13,9 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
 import com.monitoring_mikrohidro_read.dto.LastIdDto;
+import com.monitoring_mikrohidro_read.enitities.events.ElectricityEventV1;
 import com.monitoring_mikrohidro_read.repositories.ElectricityRepository;
 import com.monitoring_mikrohidro_read.repositories.LastIdRepository;
 
@@ -27,10 +29,13 @@ public class ElectricityServiceTest {
     @Mock
     ElectricityRepository electricityRepository;
 
+    @Mock
+    KafkaTemplate<String, ElectricityEventV1> kafkaTemplate;
+
     @InjectMocks
     ElectricityService electricityService;
 
-    // @Test
+    @Test
     public void testCheckNewRows() {
         LastIdDto mockLastIdDto = new LastIdDto(1L); // Mock lastIdDto with a specific lastId
         List<ElectricityReadDto> mockElectricityReadDto = new ArrayList<>();
