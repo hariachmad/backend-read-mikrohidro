@@ -45,5 +45,4 @@ public class ElectricityRepository {
         String sql = "SELECT * FROM electricity WHERE id > ?";
         return jdbcTemplate.query(sql, new Object[]{id}, electricityRowMapper);
     }
-
 }

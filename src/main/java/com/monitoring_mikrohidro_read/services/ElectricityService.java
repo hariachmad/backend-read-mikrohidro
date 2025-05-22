@@ -89,7 +89,6 @@ public class ElectricityService {
             this.updateLastId(lastId, newLastId);
             return newLastId;
         }
-
         return lastId;
     }
 }
