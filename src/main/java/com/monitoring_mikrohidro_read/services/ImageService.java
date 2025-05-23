@@ -3,6 +3,7 @@ package com.monitoring_mikrohidro_read.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.monitoring_mikrohidro_read.dto.ImageReadDto;
+import com.monitoring_mikrohidro_read.enitities.Image;
 import com.monitoring_mikrohidro_read.enitities.events.ElectricityEventV1;
 import com.monitoring_mikrohidro_read.enitities.events.ImageEventV1;
 import com.monitoring_mikrohidro_read.exceptions.DatabaseUpdateException;
@@ -28,6 +30,9 @@ public class ImageService {
     @Autowired
     private KafkaTemplate<String, ElectricityEventV1> kafkaTemplate;
 
+    @Value("${electricity.event.imageTopic}")
+    private String topicName;
+
     public void updateLastId(long lastId, long newLastId) {
         try {
             lastIdImagesRepository.updateLastId(lastId, newLastId);
@@ -42,13 +47,12 @@ public class ImageService {
         imageEvent.setEventId(event.getId());
         imageEvent.setEventVersion("1");
         imageEvent.setEventTimestamp(event.getTimestamp());
-        imageEvent.setCameraId(event.getCameraId());
-        imageEvent.setData(event.getData());
+        imageEvent.setImage(new Image(event.getMachineId(),event.getId(), event.getCameraId(), event.getData(), event.getTimestamp()));
         System.out.println("Publishing event image: " + imageEvent.toString());
 
         Message<ImageEventV1> message = MessageBuilder
                 .withPayload(imageEvent)
-                .setHeader(KafkaHeaders.TOPIC, "image-event")
+                .setHeader(KafkaHeaders.TOPIC, topicName)
                 .build();
 
         kafkaTemplate.send(message);

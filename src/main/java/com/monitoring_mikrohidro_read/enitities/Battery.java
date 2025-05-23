@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Battery {
-
     private long id;
+    private long machineId;
     private float voltage;
     private float currentOne;
     private float currentTwo;

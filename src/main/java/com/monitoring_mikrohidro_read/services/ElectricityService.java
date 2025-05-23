@@ -3,6 +3,7 @@ package com.monitoring_mikrohidro_read.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -34,6 +35,9 @@ public class ElectricityService {
     @Autowired
     private KafkaTemplate<String, ElectricityEventV1> kafkaTemplate;
 
+    @Value("${electricity.event.electricityTopic}")
+    private String topicName;
+
     public void updateLastId(long lastId, long newLastId) {
         try {
             lastIdRepository.updateLastId(lastId, newLastId);
@@ -49,18 +53,18 @@ public class ElectricityService {
         electricityEvent.setEventId(event.getId());
         electricityEvent.setEventVersion("1");
         electricityEvent.setEventTimestamp(event.getTimestamp());
-        electricityEvent.setBattery(new Battery(event.getId(),event.getBatteryVoltage(), event.getBatteryCurrentOne(), event.getBatteryCurrentTwo(), event.getTimestamp()));
-        electricityEvent.setHumiditySensor(new HumiditySensor(event.getId(), event.getHumidity(), event.getTimestamp()));
-        electricityEvent.setIntensitySensor(new IntensitySensor(event.getId(), event.getIntensity(), event.getTimestamp()));
-        electricityEvent.setSolarPanel(new SolarPanel(event.getId(), event.getSolarPanelVoltage(), event.getSolarPanelCurrent(), event.getTimestamp()));
-        electricityEvent.setTempSensor(new TempSensor(event.getId(), event.getTemperature(), event.getTimestamp()));
-        electricityEvent.setTurbineCitizens(new TurbineCitizens(event.getId(), event.getTurbineCitizensVolt(), event.getTurbineCitizensCurrent(), event.getTimestamp()));
-        electricityEvent.setTurbineOutput(new TurbineOutput(event.getId(), event.getTurbineOutputVolt(), event.getTurbineOutputCurrent(), event.getTimestamp()));
+        electricityEvent.setBattery(new Battery(event.getMachineId(),event.getId(),event.getBatteryVoltage(), event.getBatteryCurrentOne(), event.getBatteryCurrentTwo(), event.getTimestamp()));
+        electricityEvent.setHumiditySensor(new HumiditySensor(event.getMachineId(),event.getId(), event.getHumidity(), event.getTimestamp()));
+        electricityEvent.setIntensitySensor(new IntensitySensor(event.getMachineId(),event.getId(), event.getIntensity(), event.getTimestamp()));
+        electricityEvent.setSolarPanel(new SolarPanel(event.getMachineId(),event.getId(), event.getSolarPanelVoltage(), event.getSolarPanelCurrent(), event.getTimestamp()));
+        electricityEvent.setTempSensor(new TempSensor(event.getMachineId(),event.getId(), event.getTemperature(), event.getTimestamp()));
+        electricityEvent.setTurbineCitizens(new TurbineCitizens(event.getMachineId(),event.getId(), event.getTurbineCitizensVolt(), event.getTurbineCitizensCurrent(), event.getTimestamp()));
+        electricityEvent.setTurbineOutput(new TurbineOutput(event.getMachineId(),event.getId(), event.getTurbineOutputVolt(), event.getTurbineOutputCurrent(), event.getTimestamp()));
         System.out.println("Publishing event: " + electricityEvent.toString());
 
         Message<ElectricityEventV1> message = MessageBuilder
                 .withPayload(electricityEvent)
-                .setHeader(KafkaHeaders.TOPIC, "electricity-event")
+                .setHeader(KafkaHeaders.TOPIC, topicName)
                 .build();
 
         kafkaTemplate.send(message);

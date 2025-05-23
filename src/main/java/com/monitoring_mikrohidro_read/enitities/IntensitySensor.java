@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IntensitySensor {
     private long id;
+    private long machineId;
     private float intensity;
     private LocalDateTime timestamp;
 }
