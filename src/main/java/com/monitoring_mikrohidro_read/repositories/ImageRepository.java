@@ -1,5 +1,6 @@
 package com.monitoring_mikrohidro_read.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,5 +36,15 @@ public class ImageRepository {
     public List<ImageReadDto> findByLastId(long id) {
         String sql = "SELECT * FROM image WHERE id > ?";
         return jdbcTemplate.query(sql, new Object[]{id}, imageRowMapper);
+    }
+
+        public List<ImageReadDto> findByDateRange(String startDate, String endDate) {
+        String sql = "SELECT * FROM image WHERE timestamp between ? and ? limit 10";
+        return jdbcTemplate.query(sql, new Object[]{startDate,endDate}, imageRowMapper);
+    }
+
+    public ImageReadDto findImageById(long id) {
+        String sql = "SELECT * FROM image WHERE id = ?";
+        return jdbcTemplate.query(sql, new Object[]{id}, imageRowMapper).get(0);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.scheduling.annotation.Scheduled;
+// import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
@@ -37,6 +37,14 @@ public class ElectricityService {
 
     @Value("${electricity.event.electricityTopic}")
     private String topicName;
+
+    public List<ElectricityReadDto> findByDateRange(String startDate, String endDate){
+        return electricityRepository.findByDateRange(startDate, endDate);
+    }
+
+    public ElectricityReadDto findById(long id){
+        return electricityRepository.findById(id);
+    }
 
     public void updateLastId(long lastId, long newLastId) {
         try {
@@ -79,7 +87,7 @@ public class ElectricityService {
         return true;
     }
 
-    @Scheduled(fixedRate = 5000)
+    // @Scheduled(fixedRate = 5000)
     public Long checkNewRows() {
         System.out.println("Checking for new rows...");
 

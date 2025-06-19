@@ -25,7 +25,7 @@ public class LastIdImagesRepository {
     }
 
     public long updateLastId(long lastId,long newLastId) {
-        String sql = "UPDATE last_id SET last_id = ? where last_id = ?";
+        String sql = "UPDATE last_id_images SET last_id = ? where last_id = ?";
         jdbcTemplate.update(sql, newLastId,lastId);
         return newLastId;
     }

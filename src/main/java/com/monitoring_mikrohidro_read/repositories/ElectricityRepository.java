@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
+import com.monitoring_mikrohidro_read.dto.ImageReadDto;
 
 @Repository
 public class ElectricityRepository {
@@ -44,5 +45,15 @@ public class ElectricityRepository {
     public List<ElectricityReadDto> findByLastId(long id) {
         String sql = "SELECT * FROM electricity WHERE id > ?";
         return jdbcTemplate.query(sql, new Object[]{id}, electricityRowMapper);
+    }
+
+    public List<ElectricityReadDto> findByDateRange(String startDate, String endDate) {
+        String sql = "SELECT * FROM electricity WHERE timestamp between ? and ? limit 10";
+        return jdbcTemplate.query(sql, new Object[]{startDate,endDate}, electricityRowMapper);
+    }
+
+    public ElectricityReadDto findById(Long id){
+        String sql = "SELECT * FROM electricity WHERE id = ?";
+        return jdbcTemplate.query(sql, new Object[]{id}, electricityRowMapper).get(0);
     }
 }

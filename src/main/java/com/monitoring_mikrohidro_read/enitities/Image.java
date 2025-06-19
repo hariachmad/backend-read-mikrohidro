@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Image {
     private long id;
     private long cameraId;
-    private long machineId;
+    private long machineId;    
     private byte[] data;
     LocalDateTime timestamp;
 }

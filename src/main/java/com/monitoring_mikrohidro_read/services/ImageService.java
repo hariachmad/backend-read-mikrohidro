@@ -33,8 +33,17 @@ public class ImageService {
     @Value("${electricity.event.imageTopic}")
     private String topicName;
 
+    public byte[] findImageById(long id) {
+        return imageRepository.findImageById(id).getData();
+    }
+
+    public List<ImageReadDto> findByDateRange(String startDate, String endDate) {
+        return imageRepository.findByDateRange(startDate, endDate);
+    };
+
     public void updateLastId(long lastId, long newLastId) {
         try {
+            System.out.println("Updating lastIdImages from " + lastId + " to " + newLastId);    
             lastIdImagesRepository.updateLastId(lastId, newLastId);
         } catch (Exception e) {
             throw new DatabaseUpdateException("Failed to update database with new lastIdImages: " + newLastId, e);
@@ -67,7 +76,7 @@ public class ImageService {
         return true;
     }
 
-    @Scheduled(fixedRate = 50000)
+    // @Scheduled(fixedRate = 50000)
     public Long checkNewRows() {
         System.out.println("Checking for new image...");
 
