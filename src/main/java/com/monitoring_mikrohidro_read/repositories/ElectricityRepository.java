@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.monitoring_mikrohidro_read.dto.ElectricityReadDto;
-import com.monitoring_mikrohidro_read.dto.ImageReadDto;
+// import com.monitoring_mikrohidro_read.dto.ImageReadDto;
 
 @Repository
 public class ElectricityRepository {
