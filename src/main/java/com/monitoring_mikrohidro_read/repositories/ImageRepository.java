@@ -39,7 +39,7 @@ public class ImageRepository {
     }
 
     public List<ImageReadDto> findByDateRange(String startDate, String endDate) {
-        String sql = "SELECT * FROM image WHERE timestamp between ? and ? limit 10";
+        String sql = "SELECT * FROM image WHERE timestamp between ? and ? order by id desc limit 10";
         return jdbcTemplate.query(sql, new Object[]{startDate,endDate}, imageRowMapper);
     }
 
